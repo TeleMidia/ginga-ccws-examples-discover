@@ -23,7 +23,7 @@ client.on('response', function (headers, statusCode, rinfo) {
   logStatus("gingacc-ws host=" + host)
 });
 
-logStatus('Perform serach for GingaCC-Server ...');
+logStatus('Perform search for GingaCC-Server ...');
 setInterval(function() {
   client.search(SERVICE_TYPE);
   // client.search('ssdp:all')
