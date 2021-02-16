@@ -58,6 +58,9 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+# Optional stylelint cache
+.stylelintcache
+
 # Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
@@ -76,9 +79,11 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env*.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
+.parcel-cache
 
 # Next.js build output
 .next
@@ -112,3 +117,4 @@ dist
 .vscode-test
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+package-lock.json

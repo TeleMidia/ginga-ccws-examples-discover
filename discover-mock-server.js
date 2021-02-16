@@ -15,16 +15,16 @@ SERVICE_TYPE = "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
 server.addUSN(SERVICE_TYPE)
 server.heads
 
-server.on('advertise-alive', function (heads) {
-  console.log('advertise-alive', heads)
-  // Expire old devices from your cache.
-  // Register advertising device somewhere (as designated in http headers heads)
-})
+// server.on('advertise-alive', function (heads) {
+//   console.log('advertise-alive', heads)
+//   // Expire old devices from your cache.
+//   // Register advertising device somewhere (as designated in http headers heads)
+// })
 
-server.on('advertise-bye', function (heads) {
-  console.log('advertise-bye', heads)
-  // Remove specified device from cache.
-})
+// server.on('advertise-bye', function (heads) {
+//   console.log('advertise-bye', heads)
+//   // Remove specified device from cache.
+// })
 
 server.start()
   .catch(e => {
