@@ -1,35 +1,37 @@
-var ip = require('ip')
-var Server = require('node-ssdp').Server
-server = new Server();
+const ip = require("ip")
+// ssdp
+const Server = require("node-ssdp").Server
+const SERVICE_TYPE = "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
+// ws routes
+const express = require("express");
+const app = express();
+const port = 44642;
 
-server._extraHeaders = {
-  "Ext": "",
-  "GingaCC-Server-BaseURL": ip.address() + ":44642",
-  "GingaCC-Server-SecureBaseURL": ip.address() + ":44642",
-  "GingaCC-Server-PairingMethods": "qcode,kex"
-}
+// start ws routes
+app.get("/location", (req, res) => {
+  res.header("Ext", "");
+  res.header("GingaCC-Server-BaseURL", "http://" + ip.address() + ":44642");
+  res.header("GingaCC-Server-SecureBaseURL", "https://" + ip.address() + ":44642");
+  res.header("GingaCC-Server-PairingMethods", "qcode,kex");
+  res.header("GingaCC-Server-Manufacturer", "TeleMidia");
+  res.header("GingaCC-Server-ModelName", "TeleMidia GingaCC-Server Mock");
+  res.header("GingaCC-Server-FriendlyName", "TeleMidia Ginga Mock ");
+  res.header("SERVER", "TeleMidia Ginga Mock");
+  res.send();
+});
+app.listen(port, () => {
+  console.log(`-- GingaCC-Server listening on port ${port}.`)
+});
 
-console.log(server._extraHeaders);
-SERVICE_TYPE = "urn:schemas-sbtvd-org:service:GingaCCWebServices:1"
-
+// start ssdp
+const server = new Server({
+  location: "http://" + ip.address() + ":44642" + "/location"
+});
 server.addUSN(SERVICE_TYPE)
-server.heads
-
-// server.on('advertise-alive', function (heads) {
-//   console.log('advertise-alive', heads)
-//   // Expire old devices from your cache.
-//   // Register advertising device somewhere (as designated in http headers heads)
-// })
-
-// server.on('advertise-bye', function (heads) {
-//   console.log('advertise-bye', heads)
-//   // Remove specified device from cache.
-// })
-
 server.start()
   .catch(e => {
-    console.log('Failed to start server:', e)
+    console.log("-- Failed to start GingaCC-Server SSDP:", e)
   })
   .then(() => {
-    console.log('Server started.')
+    console.log("-- GingaCC-Server SSDP started.")
   })
