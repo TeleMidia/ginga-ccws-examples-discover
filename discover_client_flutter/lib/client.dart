@@ -3,6 +3,12 @@ import 'dart:async';
 import 'dart:convert';
 
 class Client {
+  bool _log;
+
+  Client([bool enableLog = false]) {
+    _log = enableLog;
+  }
+
   final InternetAddress _ipv4Multicast = new InternetAddress("239.255.255.250");
   final InternetAddress _ipv6Multicast = new InternetAddress("FF05::C");
   List<RawDatagramSocket> _sockets = <RawDatagramSocket>[];
@@ -18,7 +24,7 @@ class Client {
     _socket.readEventsEnabled = true;
 
     _socket.listen((event) {
-      print("-- createSocket(): received event " + event.toString());
+      if (_log) print("-- createSocket(): received event " + event.toString());
       switch (event) {
         case RawSocketEvent.read:
           var packet = _socket.receive();
@@ -30,7 +36,7 @@ class Client {
           }
 
           var data = utf8.decode(packet.data);
-          print("-- createSocket(): data received");
+          if (_log) print("-- createSocket(): data received");
           fn(data);
           break;
       }
@@ -73,7 +79,7 @@ class Client {
     for (var socket in _sockets) {
       try {
         var res = socket.send(data, _ipv4Multicast, 1900);
-        print("-- request(): sended bytes $res");
+        if (_log) print("-- request(): sended bytes $res");
       } on SocketException {}
     }
   }

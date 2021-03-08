@@ -1,17 +1,25 @@
 import './discover_client_flutter/lib/client.dart';
+import 'dart:io';
 
 void main() {
   Client client = new Client();
   var query = "urn:schemas-sbtvd-org:service:GingaCCWebServices:1";
+  var found = false;
   client.search(query, (data) async {
-    print("-- main(): received headers ... ");
-    print(data);
-    RegExp regExp = new RegExp(r"GingaCC-Server-BaseURL: *(.*)\s", caseSensitive: false);
-    String url;
-    var match = regExp.firstMatch(data);
-    if (match != null) {
-      url = match[1];
-    }
-    print("-- main(): GingaCC-Server-BaseURL ="  + url);
+    if (found) return;
+    found = true;
+    print("-- m-search response headers ... " + data);
+    String locationUrl = new RegExp(r"LOCATION: *(.*)\s", caseSensitive: false)
+        .firstMatch(data)[1];
+    HttpClient client = new HttpClient();
+    client.getUrl(Uri.parse(locationUrl)).then((HttpClientRequest request) {
+      return request.close();
+    }).then((HttpClientResponse response) {
+      print("-- response from " + locationUrl);
+      print("-- GingaCC-Server-BaseURL = " +
+          response.headers["GingaCC-Server-BaseURL"][0]);
+      print("-- GingaCC-Server-SecureBaseURL = " +
+          response.headers["GingaCC-Server-SecureBaseURL"][0]);
+    });
   });
 }

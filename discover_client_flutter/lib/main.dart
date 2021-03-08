@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'client.dart';
+import 'dart:io';
 
 void main() => runApp(MyApp());
 
@@ -38,7 +39,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   bool _scanning = false;
   String url = "";
-  Client client = new Client();
+  Client client = new Client(true);
 
   void _stopScan() {
     setState(() {
@@ -53,16 +54,22 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     });
     var query = "urn:schemas-sbtvd-org:service:GingaCCWebServices:1";
     client.search(query, (data) async {
-      print("-- main(): received headers => ");
-      print(data);
-      RegExp regExp =
-          new RegExp(r"GingaCC-Server-BaseURL: *(.*)\s", caseSensitive: false);
-      var match = regExp.firstMatch(data);
-      if (match != null) {
-        url = match[1];
-      }
-      print("-- main(): GingaCC-Server-BaseURL = " + url);
-      _stopScan();
+      print("-- m-search response headers ... " + data);
+      String locationUrl =
+          new RegExp(r"LOCATION: *(.*)\s", caseSensitive: false)
+              .firstMatch(data)[1];
+      HttpClient client = new HttpClient();
+      client.getUrl(Uri.parse(locationUrl)).then((HttpClientRequest request) {
+        return request.close();
+      }).then((HttpClientResponse response) {
+        print("-- response from " + locationUrl);
+        print("-- GingaCC-Server-BaseURL = " +
+            response.headers["GingaCC-Server-BaseURL"][0]);
+        print("-- GingaCC-Server-SecureBaseURL = " +
+            response.headers["GingaCC-Server-SecureBaseURL"][0]);
+        url = response.headers["GingaCC-Server-BaseURL"][0];
+        _stopScan();
+      });
     });
   }
 
@@ -89,7 +96,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           title: Text('GingaCC-WS Discover'),
         ),
         body: Center(
-          child: Text((url == "" ? "GingaCC-WS not found": "GingaCC-WS found at " + url),
+          child: Text(
+              (url == ""
+                  ? "GingaCC-WS not found"
+                  : "GingaCC-WS found at " + url),
               style:
                   new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
         ),
