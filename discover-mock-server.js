@@ -25,7 +25,8 @@ app.listen(port, () => {
 
 // start ssdp
 const server = new Server({
-  location: "http://" + ip.address() + ":44642" + "/location"
+  location: "http://" + ip.address() + ":44642" + "/location",
+  suppressRootDeviceAdvertisements: true
 });
 server.addUSN(SERVICE_TYPE)
 server.start()

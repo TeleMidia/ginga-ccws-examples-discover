@@ -21,10 +21,11 @@ client = new Client();
 client.on('response', function (headers, statusCode, rinfo) {
   if (found) return;
   found = true;
-  // print headers
+  
+  // log 
   logStatus('m-search response from ' + rinfo.address);
   logStatusObject("response headers ", headers);
-
+  
   // get location
   var location = 'undefined'
   if (headers["LOCATION"])
