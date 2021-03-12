@@ -73,7 +73,7 @@ class Client {
     buff.write("HOST:239.255.255.250:1900\r\n");
     buff.write('MAN:"ssdp:discover"\r\n');
     buff.write("MX:1\r\n");
-    buff.write("ST:$searchTarget\r\n");
+    buff.write("ST:$searchTarget\r\n\r\n"); 
     var data = utf8.encode(buff.toString());
 
     for (var socket in _sockets) {
