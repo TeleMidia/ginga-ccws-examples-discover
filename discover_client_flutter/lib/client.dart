@@ -3,11 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 
 class Client {
-  bool _log;
-
-  Client([bool enableLog = false]) {
-    _log = enableLog;
-  }
 
   final InternetAddress _ipv4Multicast = new InternetAddress("239.255.255.250");
   final InternetAddress _ipv6Multicast = new InternetAddress("FF05::C");
@@ -17,14 +12,34 @@ class Client {
   Future createSocket(void Function(String) fn) async {
     List<NetworkInterface> _interfaces;
     _interfaces = await NetworkInterface.list();
-    RawDatagramSocket _socket =
-        await RawDatagramSocket.bind(InternetAddress.anyIPv4.address, 0);
+    var wifiAddressPrefix = '192.168.0';
+    var bindInterface;
+    var bindAddress;
+
+    // search a WiFi interface to bind
+    for (var interface in _interfaces) {
+      for (var ipInfo in interface.addresses) {
+        if (ipInfo.address.startsWith(wifiAddressPrefix)) {
+          bindInterface = interface;
+          bindAddress = ipInfo.address;
+        }
+      }
+    }
+
+    if (bindAddress == null) {
+      print("-- It was not able to find a WiFi interface ");
+      return;
+    }
+
+    print(
+        "-- It was able to find a WiFi interface named $bindInterface at addres $bindAddress");
+    RawDatagramSocket _socket = await RawDatagramSocket.bind(bindAddress, 0);
     _socket.broadcastEnabled = true;
     _socket.multicastHops = 50;
     _socket.readEventsEnabled = true;
 
     _socket.listen((event) {
-      if (_log) print("-- createSocket(): received event " + event.toString());
+      print("-- listen(): received event " + event.toString());
       switch (event) {
         case RawSocketEvent.read:
           var packet = _socket.receive();
@@ -36,21 +51,19 @@ class Client {
           }
 
           var data = utf8.decode(packet.data);
-          if (_log) print("-- createSocket(): data received");
+          print("-- listen(): data received");
           fn(data);
           break;
       }
     });
 
-    for (var interface in _interfaces) {
-      try {
-        _socket.joinMulticast(_ipv4Multicast, interface);
-      } on OSError {}
+    try {
+      _socket.joinMulticast(_ipv4Multicast, bindInterface);
+    } on OSError {}
 
-      try {
-        _socket.joinMulticast(_ipv6Multicast, interface);
-      } on OSError {}
-    }
+    try {
+      _socket.joinMulticast(_ipv6Multicast, bindInterface);
+    } on OSError {}
     _sockets.add(_socket);
   }
 
@@ -73,13 +86,13 @@ class Client {
     buff.write("HOST:239.255.255.250:1900\r\n");
     buff.write('MAN:"ssdp:discover"\r\n');
     buff.write("MX:1\r\n");
-    buff.write("ST:$searchTarget\r\n\r\n"); 
+    buff.write("ST:$searchTarget\r\n\r\n");
     var data = utf8.encode(buff.toString());
 
     for (var socket in _sockets) {
       try {
         var res = socket.send(data, _ipv4Multicast, 1900);
-        if (_log) print("-- request(): sended bytes $res");
+        print("-- request(): sended bytes $res");
       } on SocketException {}
     }
   }

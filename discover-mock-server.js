@@ -49,7 +49,7 @@ const server = new SSDPServer({
   //   serveInteface
   // ],
   reuseAddr: true,
-  adInterval: 30000 // hight notify interval because m-search response is more important
+  adInterval: 1000000 // hight notify interval because m-search response is more important
 });
 server.addUSN(SERVICE_TYPE);
 server.start()

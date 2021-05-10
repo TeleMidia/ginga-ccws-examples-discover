@@ -39,7 +39,7 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   bool _scanning = false;
   String url = "";
-  Client client = new Client(true);
+  Client client = new Client();
 
   void _stopScan() {
     setState(() {
