@@ -9,7 +9,7 @@ This project has a mock server and clients examples to discover this service.
 
 ``` bash
 npm install
-node discover-mock-server.js
+node mock-server.js
 ```
 
 ## cmd clients
