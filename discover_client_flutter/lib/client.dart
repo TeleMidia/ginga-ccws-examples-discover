@@ -1,39 +1,17 @@
 // @dart=2.9
 import 'dart:io';
+import 'dart:io' show Platform;
 import 'dart:async';
 import 'dart:convert';
 
 class Client {
-
   final InternetAddress _ipv4Multicast = new InternetAddress("239.255.255.250");
   final InternetAddress _ipv6Multicast = new InternetAddress("FF05::C");
   List<RawDatagramSocket> _sockets = <RawDatagramSocket>[];
   Timer _discoverySearchTimer;
 
-  Future createSocket(void Function(String) fn) async {
-    List<NetworkInterface> _interfaces;
-    _interfaces = await NetworkInterface.list();
-    var wifiAddressPrefix = '192.168.0';
-    var bindInterface;
-    var bindAddress;
-
-    // search a WiFi interface to bind
-    for (var interface in _interfaces) {
-      for (var ipInfo in interface.addresses) {
-        if (ipInfo.address.startsWith(wifiAddressPrefix)) {
-          bindInterface = interface;
-          bindAddress = ipInfo.address;
-        }
-      }
-    }
-
-    if (bindAddress == null) {
-      print("-- It was not able to find a WiFi interface ");
-      return;
-    }
-
-    print(
-        "-- It was able to find a WiFi interface named $bindInterface at addres $bindAddress");
+  Future createSocket(void Function(String) fn, NetworkInterface bindInterface,
+      String bindAddress) async {
     RawDatagramSocket _socket = await RawDatagramSocket.bind(bindAddress, 0);
     _socket.broadcastEnabled = true;
     _socket.multicastHops = 50;
@@ -101,8 +79,20 @@ class Client {
   Future<Null> search(query, void Function(String) fn) async {
     Duration searchInterval = const Duration(seconds: 5);
     if (_sockets.isEmpty) {
-      await createSocket(fn);
-      await new Future.delayed(const Duration(seconds: 1));
+      List<NetworkInterface> _interfaces;
+      _interfaces = await NetworkInterface.list();
+      var wifiAddressPrefix = '192.168.0';
+
+      for (var interface in _interfaces) {
+        for (var ipInfo in interface.addresses) {
+          if (ipInfo.isLoopback) continue;
+          if (ipInfo.type == InternetAddressType.IPv6) continue;
+          if (Platform.isAndroid &&
+              !ipInfo.address.startsWith(wifiAddressPrefix)) continue;
+          await createSocket(fn, interface, ipInfo.address);
+          await new Future.delayed(const Duration(seconds: 1));
+        }
+      }
     }
     request(query);
     _discoverySearchTimer = new Timer.periodic(searchInterval, (_) {
