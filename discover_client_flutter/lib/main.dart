@@ -1,12 +1,4 @@
-/// Flutter code sample for Scaffold
-
-// This example shows a [Scaffold] with a blueGrey [backgroundColor], [body]
-// and [FloatingActionButton]. The [body] is a [Text] placed in a [Center] in
-// order to center the text within the [Scaffold]. The [FloatingActionButton]
-// is connected to a callback that increments a counter.
-//
-// ![](https://flutter.github.io/assets-for-api-docs/assets/material/scaffold_background_color.png)
-
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'client.dart';

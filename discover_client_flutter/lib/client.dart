@@ -81,14 +81,10 @@ class Client {
     if (_sockets.isEmpty) {
       List<NetworkInterface> _interfaces;
       _interfaces = await NetworkInterface.list();
-      var wifiAddressPrefix = '192.168.0';
-
       for (var interface in _interfaces) {
         for (var ipInfo in interface.addresses) {
           if (ipInfo.isLoopback) continue;
           if (ipInfo.type == InternetAddressType.IPv6) continue;
-          if (Platform.isAndroid &&
-              !ipInfo.address.startsWith(wifiAddressPrefix)) continue;
           await createSocket(fn, interface, ipInfo.address);
           await new Future.delayed(const Duration(seconds: 1));
         }
