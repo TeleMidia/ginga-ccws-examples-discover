@@ -69,7 +69,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     if (_scanning) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('GingaCC-WS Discover'),
+          title: Text('GingaCC-WS discover flutter example'),
         ),
         body: SpinKitRing(
           color: Colors.blue,

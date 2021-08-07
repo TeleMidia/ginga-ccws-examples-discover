@@ -3,7 +3,7 @@
 ![ginga](https://upload.wikimedia.org/wikipedia/commons/c/ce/Ginga_Middleware_Logo.png)
 
 GingaCC WebServices is a service running at Ginga TV middleware with API to support second screen and SmartTV applications.
-This project has a mock server and clients examples to discover this service.
+This project has a mock server and code examples to discover this service.
 
 ## mock server
 
@@ -18,29 +18,29 @@ node mock-server.js
 
 ``` bash
 npm install
-node discover-client.js
+node discover.js
 ```
 
 #### Dart client
 
 ``` bash
-dart discover-client.dart
+dart discover.dart
 ```
 
 #### Dotnet client
 
 ``` bash
-cd discover_client_dotnet
+cd discover_dotnet
 dotnet run
 ```
 
 #### flutter client
 
 ``` bash
-cd discover_client_flutter
+cd discover_flutter
 flutter run
 ```
 
 The next screenshot shown the flutter client after find the mock-server address.
 
-<img src="discover_client_flutter/screenshot.png" width="200" height="400">
+<img src="discover_flutter/screenshot.png" width="200" height="400">

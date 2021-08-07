@@ -1,5 +1,5 @@
 // @dart=2.9
-import './discover_client_flutter/lib/client.dart';
+import './discover_flutter/lib/client.dart';
 import 'dart:io';
 
 void main() {
