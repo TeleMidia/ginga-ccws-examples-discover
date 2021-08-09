@@ -53,6 +53,7 @@ class Client {
     for (var socket in _sockets) {
       socket.close();
     }
+    _sockets.clear();
   }
 
   void request([String searchTarget]) {
@@ -89,7 +90,6 @@ class Client {
         }
       }
     }
-    request(query);
     _discoverySearchTimer = new Timer.periodic(searchInterval, (_) {
       request(query);
     });
